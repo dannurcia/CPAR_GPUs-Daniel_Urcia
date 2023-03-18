@@ -391,14 +391,151 @@ Ahora se usará el archivo **r000gh.vtune** para visualizar los resultados del a
 
 Primero, se accede a la ubicación del ejecutable que corresponde al ejemplo de NBody escrito en SYCL:
 
+`cd ~/computacion_paralela/CPAR_GPUs/oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody/build/src/`
 
+```
+/home/u185959/computacion_paralela/CPAR_GPUs/oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody/build/src
+```
 
+Ahora, se procede a crear el archivo buil.sh 
 
+```
+%%writefile ~/computacion_paralela/CPAR_GPUs/oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody/build/src/build.sh
+source /opt/intel/inteloneapi/setvars.sh > /dev/null 2>&1
+mkdir build
+cd build
+cmake ..
+make
+```
 
+```
+Writing /home/u185959/computacion_paralela/CPAR_GPUs/oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody/build/src/run.sh
+```
 
+Ejecutando estos dos archivos:
 
+`!qsub -l nodes=1:gpu:ppn=2 -d . build.sh`
 
+```
+2255146.v-qsvr-1.aidevcloud
+```
 
+`!qsub -l nodes=1:gpu:ppn=2 -d . run.sh`
 
+```
+2255147.v-qsvr-1.aidevcloud
+```
 
+Con ello, se obtiene el ejecutable **NBody** para usarlo en el software Advisor. En esta ubicación ejecutamos el siguiente comando:
 
+`!advisor --collect=roofline --project-dir=./advi_results -- ~/computacion_paralela/CPAR_GPUs/oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody/build/src/nbody`
+
+```
+advisor: Warning: The Roofline is a special batch mode of data collection. It runs two analyses one by one. There are Survey Analysis and Trip Counts Analysis with FLOP respectively.
+advisor: Starting command line: advisor --collect survey --project-dir ./advi_results -- /home/u185959/computacion_paralela/CPAR_GPUs/oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody/build/src/nbody
+Intel(R) Advisor Command Line Tool
+Copyright (C) 2009-2023 Intel Corporation. All rights reserved.
+advisor: Collection started. To stop the collection, either press CTRL-C or enter from another console window: advisor -r /home/u185959/computacion_paralela/CPAR_GPUs/oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody/build/src/advi_results/e000/hs000 -command stop.
+===============================
+ Initialize Gravity Simulation
+ nPart = 16000; nSteps = 10; dt = 0.1
+------------------------------------------------
+ s       dt      kenergy     time (s)    GFLOPS      
+------------------------------------------------
+ 1       0.1     26.405      0.44998     16.499      
+ 2       0.2     313.77      0.026332    281.95      
+ 3       0.3     926.56      0.017184    432.05      
+ 4       0.4     1866.4      0.015776    470.61      
+ 5       0.5     3135.6      0.015988    464.38      
+ 6       0.6     4737.6      0.015787    470.28      
+ 7       0.7     6676.6      0.016815    441.53      
+ 8       0.8     8957.7      0.016183    458.76      
+ 9       0.9     11587       0.015997    464.11      
+ 10      1       14572       0.01595     465.49      
+
+# Total Time (s)     : 0.6062
+# Average Performance : 458.4 +- 13.172
+===============================
+advisor: Collection stopped.
+advisor: Opening result 21 % Resolving information for `libstdc++.so.6'        
+advisor: Warning: Cannot locate debugging information for file `/lib64/ld-linux-x86-64.so.2'.
+advisor: Opening result 21 % Resolving information for `nbody'                 
+advisor: Warning: Cannot locate debugging information for file `/glob/development-tools/versions/oneapi/2023.0.1/oneapi/advisor/2023.0.0/lib64/runtime/libittnotify_collector.so'.
+advisor: Warning: Cannot locate debugging information for file `/lib/x86_64-linux-gnu/libstdc++.so.6'.
+advisor: Opening result 21 % Resolving information for `libclang_compiler.so.20
+advisor: Warning: Cannot locate debugging information for file `/glob/development-tools/versions/oneapi/2023.0.1/oneapi/advisor/2023.0.0/lib64/libtpsstool.so'.
+advisor: Opening result 21 % Resolving information for `libc.so.6'             
+advisor: Warning: Cannot locate debugging information for file `/lib/x86_64-linux-gnu/libc.so.6'.
+advisor: Opening result 22 % Resolving information for `libdl.so.2'            
+advisor: Warning: Cannot locate debugging information for file `/lib/x86_64-linux-gnu/libdl.so.2'.
+advisor: Opening result 22 % Resolving information for `libpthread.so.0'       
+advisor: Warning: Cannot locate debugging information for file `/lib/x86_64-linux-gnu/libpthread.so.0'.
+advisor: Opening result 99 % done                                              
+advisor: Preparing frequently used data  1 % done                              
+advisor: Preparing frequently used data 100 % done                             
+advisor: Warning: Some target modules do not contain debug information 
+advisor: Warning: Your application might be underperforming 
+advisor: Warning: Application with offload directives may require a GPU-specific analysis 
+
+Program Elapsed Time: 6.25s
+
+CPU Time: 6.25s
+Time in 3 Vectorized Loops: 1.94s
+
+advisor: Starting command line: advisor --collect tripcounts --project-dir ./advi_results --flop --no-trip-counts -- /home/u185959/computacion_paralela/CPAR_GPUs/oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody/build/src/nbody
+Intel(R) Advisor Command Line Tool
+Copyright (C) 2009-2023 Intel Corporation. All rights reserved.
+advisor: Opening result 25 % done                                              
+advisor: Preparing frequently used data  1 % done                              
+advisor: Preparing frequently used data 100 % done                             
+advisor: Collection started. To stop the collection, either press CTRL-C or enter from another console window: advisor -r /home/u185959/computacion_paralela/CPAR_GPUs/oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody/build/src/advi_results/e000/trc000 -command stop.
+===============================
+ Initialize Gravity Simulation
+ nPart = 16000; nSteps = 10; dt = 0.1
+------------------------------------------------
+ s       dt      kenergy     time (s)    GFLOPS      
+------------------------------------------------
+ 1       0.1     26.405      26.9        0.276       
+ 2       0.2     313.77      0.065468    113.4       
+ 3       0.3     926.56      0.0337      220.31      
+ 4       0.4     1866.4      0.024815    299.18      
+ 5       0.5     3135.6      0.026541    279.73      
+ 6       0.6     4737.6      0.024957    297.48      
+ 7       0.7     6676.6      0.020094    369.47      
+ 8       0.8     8957.7      0.020192    367.68      
+ 9       0.9     11587       0.019996    371.28      
+ 10      1       14572       0.020601    360.39      
+
+# Total Time (s)     : 27.18
+# Average Performance : 320.69 +- 51.816
+===============================
+advisor: Opening result 100 % done                                             
+advisor: Preparing frequently used data  1 % done                              
+advisor: Preparing frequently used data 100 % done                             
+advisor: Warning: Some target modules do not contain debug information 
+advisor: Warning: Your application might be underperforming 
+advisor: Warning: Application with offload directives may require a GPU-specific analysis 
+
+Program Elapsed Time: 6.25s
+
+CPU Time: 6.25s
+Time in 3 Vectorized Loops: 1.94s
+GFLOPS: 11.06
+GINTOPS: 0.05
+```
+
+Con este procedimiento se ha creado la carpeta "advi_results" donde se han guardado todos los resultados del Roofline del nodo que se está usando. Así, se procede a copiar a la pc local mediante MobaXterm:
+
+![alt text](copy_carpeta_advisor.JPG)
+
+Verificando que se haya copiado correctamente en la carpeta de destino local:
+
+![alt text](carpeta_advisor_results.JPG)
+
+Ahora se procede a abrir el software **Advisor** para ejecutar el archivo obtenido en la carpeta "advi_results". Con ello se obtienen los resultados del análisis roofline que se observan en la siguiente figura:
+
+![alt text](roofline_dann2.JPG)
+
+![alt text](roofline_dann.JPG)
+
+De la imagen obtenida al realizar el **roofline** en Advisor para el algoritmo **NBody** se puede observar que hay una sección que tiene potencial de incrementar su velocidad en el algoritmo, por ende no está explotando el potencial del sistema sobre el cual se ha ejecutado. Una posible mejora sería aumentando el número de operaciones para lograr un mayor rendimiento.
